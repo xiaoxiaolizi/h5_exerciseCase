@@ -1,0 +1,27 @@
+/***博客****/
+ul{
+  list-style: none;
+}
+div#blogBody{
+  margin: 0;
+  overflow: hidden;
+}
+
+[id^=column_]{
+  display: inline;
+  float: left;
+  overflow: hidden;
+}
+
+div#column_1{
+  margin-left: 20px;
+  width: 210px;
+}
+
+div#column_2{
+  margin-left: 10px;
+  width: 740px;
+}
+
+
+/***企业***/

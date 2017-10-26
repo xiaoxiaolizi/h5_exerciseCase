@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>文件上传并预览示例</title>
+    <style media="screen">
+      div#show {
+        border: 10px dashed #ccc;
+        width: 300px;
+        height: 300px;
+        margin: 5px 0;
+        resize: both;
+        overflow: auto;
+      }
+    div#show:hover {
+      border: 10px dashed #333;
+    }
+
+    div#main {
+      width: 100%;
+    }
+
+    div#successLabel {
+      color: red;
+    }
+    </style>
+
+
+  </head>
+  <body>
+     <form class="" action="javascript: uploadAndSubmit()" method="post" id='form1'>
+          <h1>文件预览并上传</h1>
+          <div id='main'>
+             <div id="show">
+              文件预览区域
+
+             </div>
+          </div>
+          <input type="submit" name="" value="上传" id='saveButton' disabled="disabled"/>
+          <div id="successLabel" />
+     </form>
+
+     <script type="text/javascript">
+        var sendInformation = new Object();
+
+        function init() {
+          var dest = document.getElementById('show');
+          dest.addEventListener('dragover', function(ev) {
+            ev.stopPropagation();
+            ev.preventDefault();
+          },false);
+          dest.addEventListener('dragend', function(ev) {
+            ev.stopPropagation();
+            ev.preventDefault();
+          },false);
+          dest.addEventListener('drop', function(ev) {
+            ev.stopPropagation();
+            ev.preventDefault();
+
+            var file = ev.dataTransfer.files[0];
+            var reader = new FileReader();
+            sendInformation = file.name;
+
+            var saveButton = document.getElementById('saveButton');
+            if(file.type.substr(0, 5) == "image") {
+              reader.onload = function(event) {
+                dest.style.background = 'url('+event.target.result+') no-repeat center';
+                dest.innerHTML = '';
+              }
+              reader.readAsDataURL(file);
+              sendInformation.content = file.getAsBinary();
+              sendInformation.fileType = 1;
+              saveButton.disabled = '';
+            }else if(file.type.substr(0, 4) == "text") {
+              reader.readAsText(file);
+              reader.onload = function(f) {
+                dest.innerHTML = '<pre>'+this.result+'</pre>';
+                sendInformation.content = this.result;
+                dest.style.background = 'white';
+              }
+              saveButton.disabled = '';
+              sendInformation.fileType = 2;
+            }else {
+              dest.innerHTML = '暂时不支持此类文件的预览';
+              dest.style.background = 'white';
+              saveButton.disabled = 'disabled';
+              sendInformation.fileType = 3;
+            }
+            document.getElementById('successLabel').innerHTNL = '';
+          },false)
+        }
+
+        init();
+
+        function uploadAndSubmit() {
+          var xhr = new XMLHttpRequest();
+          xhr.open('POST', 'dragAndSaveBack.aspx?fileName='+encodeURI(sendInformation.fileName)+'&fileType='+sendInformation.fileType);
+          if(sendInformation.fileTpe == 1) {
+            xhr.sendAsBinary(sendInformation.content);
+          }else if(sendInformation.fileType == 2){
+            xhr.send(sendInformation.content);
+          }
+
+          xhr.onreadystatechange = function() {
+            var result = xhr.responseText;
+            document.getElementById('show').innerHTML = '文件预览区';
+            document.getElementById('show').style.background = 'white';
+            document.getElementById('successLabel').innerHTML = result;
+            document.getElementById('saveButton').style.disabled = 'disabled';
+            if(xhr.readyState == 4) {
+              if(result == '上传成功') {
+                document.getElementById('saveButton').value = '继续上传';
+              }else{
+                document.getElementById('saveButton').value = '重新上传';
+              }
+            }
+          }
+        }
+
+        document.ondragover = function(e) {e.preventDefault();}
+        document.ondrop = function(e) {e.preventDefault();}
+     </script>
+  </body>
+
+</html>

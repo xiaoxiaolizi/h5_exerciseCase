@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>将彩色照片转化成黑白照片</title>
+    <script type="text/javascript">
+       var canvas,cxt;
+       function btnConvert_onclick() {
+         canvas = document.getElementById('canvas');
+         var imgElement = document.getElementById('img');
+         canvas.width = imgElement.width;
+         canvas.height = imgElement.height;
+
+         cxt = canvas.getContext('2d');
+         imgElement.onload = function() {
+           cxt.drawImage(imgElement, 0, 0);
+           imageConvertToGray();
+         }
+         imgElement.src = 'd1.jpg';
+         document.getElementById('btnSave').disabled = '';
+       }
+
+       function imageConvertToGray() {
+         var length = canvas.width*canvas.height;
+         imageData = cxt.getImageData(0, 0, canvas.width, canvas.height);
+         for(var i=0;i<length*4;i+=4){
+           var myRed = imageData.data[i];
+           var myGreen = imageData.data[i+1];
+           var myBlue = imageData.data[i+2];
+           myGray = parseInt((myRed+myGreen+myBlue)/3);
+           imageData.data[i] = myGray;
+           imageData.data[i+1] = myGray;
+           imageData.data[i+2] = myGray;
+        }
+        cxt.putImageData(imageData, 0, 0);
+       }
+
+       function btnSave_onclick() {
+         window.location = canvas.toDataURL('image/jpeg');
+       }
+    </script>
+  </head>
+  <body>
+    <h1>将彩色照片转化成黑白照片</h1>
+    <img src="d1.jpg" alt="" id='img'><br>
+    <input type="button" name="" value="转化" id='btnConvert' onclick='btnConvert_onclick()'>
+    <input type="button" name="" value="保存图片" id='btnSave' onclick='btnSave_onclick()' disabled> <br>
+    <canvas id="canvas" width="600" height="600"></canvas>
+
+
+  </body>
+</html>

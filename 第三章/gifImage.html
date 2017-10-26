@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>用动画的形式去装载图像</title>
+    <style media="screen">
+      artilce {
+        align: center;
+      }
+      canvas {
+        background-color: white;
+      }
+      div#divLeft {
+        width: 150px;
+        float: left;
+      }
+      div#divRight {
+        float: left;
+      }
+      input[type="button"] {
+        width: 140px;
+        margin-bottom:10px;
+      }
+    </style>
+  </head>
+  <body onload="window_onload()">
+    <article>
+        <h1>用动画的形式去装载图像</h1>
+        <div id="divLeft">
+              <input type="button" value="从左往右加载" id='btn1' onclick="btn1_onclick()">
+              <input type="button" value="从上往下加载" id='btn2' onclick="btn2_onclick()">
+              <input type="button" value="横向窗帘式拉开" id='btn3' onclick="btn3_onclick()">
+              <input type="button" value="竖向窗帘式拉开" id='btn4' onclick="btn4_onclick()">
+              <input type="button" value="横向百叶窗式展开" id='btn5' onclick="btn5_onclick()">
+              <input type="button" value="竖向百叶窗式展开" id='btn6' onclick="btn6_onclick()">
+        </div>
+        <div id="divRight">
+           <canvas id="canvas" width="600" height="600"></canvas>
+        </div>
+    </article>
+
+
+   <script type="text/javascript">
+     var width, height;
+     var context;
+     var image;
+     var functionId;
+     var drawLeft;
+     var drawWidth;
+     var drawHeight;
+     var drawTop;
+     var spaceWidth, spaceHeight;
+
+     function window_onload() {
+       var canvas = document.getElementById('canvas');
+       context = canvas.getContext('2d');
+       image = new Image;
+       image.src = 'd1.jpg';
+       width = canvas.width;
+       height = canvas.height;
+     }
+
+     //从右往左装载图像
+     function btn1_onclick() {
+       context.fillStyle = '#EEEEFF';
+       context.fillRect(0, 0, width, height);
+
+       drawWidth = 0;
+       functionId = self.setInterval('drawImg1()', 100);
+       btnDisable();
+     }
+
+     function drawImg1() {
+       context.drawImage(image, 0, 0, drawWidth, image.height, 0, 0, drawWidth, image.height);
+       drawWidth = drawWidth+2;
+
+       if(drawWidth>width) {
+         window.clearInterval(functionId);
+         btnEnable();
+       }
+     }
+
+     //从上往下装载图像
+     function btn2_onclick() {
+       context.fillStyle = '#EEEEFF';
+       context.fillRect(0, 0, width, height);
+
+       drawHeight = 0;
+       functionId = self.setInterval('drawImg2()', 100);
+       btnDisable();
+     }
+
+     function drawImg2() {
+       context.drawImage(image, 0, 0, image.width, drawHeight, 0, 0, image.width, drawHeight);
+       drawHeight = drawHeight+2;
+
+       if(drawHeight>height) {
+         window.clearInterval(functionId);
+         btnEnable();
+       }
+     }
+
+     //以中央想左右两边拉开的方式动态加载图片
+     function btn3_onclick() {
+       context.fillStyle = '#EEEEFF';
+       context.fillRect(0, 0, width, height);
+       drawLeft = width/2;
+       drawWidth = 0;
+
+       functionId = self.setInterval('drawImg3()', 100);
+       btnDisable();
+     }
+
+     function drawImg3() {
+       context.drawImage(image, drawLeft, 0, drawWidth, image.height, drawLeft, 0, drawWidth, image.height);
+       drawLeft = drawLeft-1;
+       drawWidth = drawWidth+2;
+
+       if(drawLeft<=0) {
+         window.clearInterval(functionId);
+         btnEnable();
+       }
+     }
+
+        //以中央向上下两边拉开的方式动态加载图片
+
+        function btn4_onclick() {
+          context.fillStyle = '#EEEEFF';
+          context.fillRect(0, 0, width, height);
+          drawTop = height/2;
+          drawHeight = 0;
+
+          functionId = self.setInterval('drawImg4()', 100);
+          btnDisable();
+        }
+
+        function drawImg4() {
+          context.drawImage(image, 0, drawTop, image.width, drawHeight, 0, drawTop, image.width, drawHeight  );
+          drawTop = drawTop-1;
+          drawHeight = drawHeight+2;
+
+          if(drawTop<=0){
+            window.clearInterval(functionId);
+            btnEnable();
+          }
+        }
+
+        //以逐渐装满横向栅格的方式动态加载图像
+        function btn5_onclick(){
+          context.fillStyle = '#EEEEFF';
+          context.fillRect(0, 0, width, height);
+          spaceWidth = width/10;
+          drawWidth = 0;
+
+          functionId = self.setInterval('drawImg5()', 100);
+          btnDisable();
+        }
+
+        function drawImg5() {
+          for(var i=0;i<10;i++){
+            context.drawImage(image, 0+i*spaceWidth, 0, drawWidth, image.height, 0+i*spaceWidth, 0, drawWidth, image.height);
+          }
+          drawWidth +=1;
+
+           if(drawWidth>spaceWidth){
+             window.clearInterval(functionId);
+             btnEnable();
+           }
+
+        }
+
+        //以逐渐装满竖向栅格的方式动态加载图像
+        function btn6_onclick() {
+          context.fillStyle = '#EEEEFF';
+          context.fillRect(0, 0, width, height);
+          spaceHeight = height/10;
+          drawHeight = 0;
+
+          functionId = self.setInterval('drawImg6()', 100);
+          btnDisable();
+        }
+
+        function drawImg6() {
+          for(var i=0;i<10;i++){
+            context.drawImage(image, 0, 0+i*spaceHeight, image.width, drawHeight, 0, 0+i*spaceHeight, image.width, drawHeight);
+          }
+          drawHeight +=1;
+
+          if(drawHeight>spaceHeight) {
+            window.clearInterval(functionId);
+            btnEnable();
+          }
+        }
+
+        //使所有按钮变为无效状态
+        function btnDisable() {
+          document.getElementById('btn1').disabled = 'disabled';
+          document.getElementById('btn2').disabled = 'disabled';
+          document.getElementById('btn3').disabled = 'disabled';
+          document.getElementById('btn4').disabled = 'disabled';
+          document.getElementById('btn5').disabled = 'disabled';
+          document.getElementById('btn6').disabled = 'disabled';
+        }
+
+        //使所有按钮变为有效状态
+        function btnEnable() {
+          document.getElementById('btn1').disabled = '';
+          document.getElementById('btn2').disabled = '';
+          document.getElementById('btn3').disabled = '';
+          document.getElementById('btn4').disabled = '';
+          document.getElementById('btn5').disabled = '';
+          document.getElementById('btn6').disabled = '';
+        }
+   </script>
+  </body>
+</html>

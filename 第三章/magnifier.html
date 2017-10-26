@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>对图像使用放大镜</title>
+    <style media="screen">
+      canvas {
+        background-color: white;
+        position: absolute;
+      }
+      canvas#canvas1 {
+        z-index: 1;
+      }
+      canvas#canvas2 {
+        z-index: 2;
+        left: 0;
+        top: 0;
+        border: thin dashed black;
+        border-radius: 40px;
+        -o-border-radius: 40px;
+        -moz-border-radius: 40px;
+        -webkit-border-radius: 40px;
+        display: none;
+        position: relative;
+      }
+    </style>
+  </head>
+  <body onload="window_onload()">
+    <h1>对图像使用放大镜</h1>
+    <canvas id="canvas1" width="1920" height="1200"></canvas>
+    <canvas id="canvas2" width="80" height="82"></canvas>
+
+    <script type="text/javascript">
+       function window_onload() {
+         var canvas1 = document.getElementById('canvas1');
+         context = canvas1.getContext('2d');
+         var image= new Image();
+         image.src = 'd1.jpg';
+         image.onload = function(){
+           context.drawImage(image, 0, 0);
+         }
+         canvas1.onmousemove = canvas1_onmouse_move;
+         canvas1.onmouseout = canvas1_onmouse_out;
+       }
+
+       function canvas1_onmouse_move(ev) {
+         var canvas1, canvas2, context, image;
+         var x, y;
+         var drawWidth, drawHeight;
+         canvas1 = document.getElementById('canvas1');
+         canvas2 = document.getElementById('canvas2');
+         context = canvas2.getContext('2d');
+
+         canvas2.style.display = 'inline';
+         context.clearRect(0, 0, canvas2.width, canvas2.height);
+
+         x = ev.pageX - canvas1.offsetLeft;
+         y = ev.pageY - canvas1.offsetTop;
+         canvas2.style.left = x+2+'px';
+         canvas2.style.top = y+2+'px';
+
+         if(x+40>canvas1.width){
+           drawWidth = canvas1.width-x;
+         }else{
+           drawWidth = 40;
+        }
+
+        if(y+40>canvas1.height){
+          drawHeight = canvas1.height;
+        }else{
+          drawHeight = 40;
+        }
+        var image = new Image();
+        image.src='d1.jpg';                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     context.drawImage(image, x, y, drawWidth, drawHeight, 0, 0, drawWidth*2, drawHeight*2);
+       }
+
+       function canvas1_onmouse_out() {
+         var canvas2 = document.getElementById('canvas2');
+         canvas2.style.display = 'none';
+       }
+    </script>
+  </body>
+</html>
